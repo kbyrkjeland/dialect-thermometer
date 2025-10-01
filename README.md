@@ -27,7 +27,7 @@ sensor:
 
 ## Dialekter
 
-Tilgjengelige dialekter og uttrykk defineres i `custom_components/dialect_thermometer/const.py`.
+Tilgjengelige dialekter og uttrykk defineres i `custom_components/dialect_thermometer/dialects.py`.
 
 ## Lisens
 

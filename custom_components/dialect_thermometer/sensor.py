@@ -14,7 +14,8 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
-from .const import DIALECTS, DOMAIN, UNKNOWN_STATE
+from .const import DOMAIN, UNKNOWN_STATE
+from .dialects import DIALECTS
 
 _LOGGER = logging.getLogger(__name__)
 
