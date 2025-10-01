@@ -3,39 +3,22 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Iterable, Callable
+from typing import Any, Callable, Iterable
 
-import voluptuous as vol
-
-from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorEntity
-from homeassistant.const import CONF_NAME
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, State
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
-from .const import DOMAIN, UNKNOWN_STATE
+from .const import (
+    CONF_DIALECT,
+    CONF_TEMPERATURE_SENSOR_ID,
+    UNKNOWN_STATE,
+)
 from .dialects import DIALECTS
 
 _LOGGER = logging.getLogger(__name__)
-
-CONF_SENSORS = "sensors"
-CONF_TEMPERATURE_SENSOR_ID = "temperature_sensor_id"
-CONF_DIALECT = "dialect"
-
-SENSOR_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_TEMPERATURE_SENSOR_ID): cv.entity_id,
-        vol.Required(CONF_DIALECT): cv.string,
-        vol.Optional(CONF_NAME): cv.string,
-    }
-)
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-        vol.Required(CONF_SENSORS): vol.Schema({cv.slug: SENSOR_SCHEMA})
-    }
-)
 
 
 def _iter_sorted_thresholds(thresholds: Iterable[int]) -> list[int]:
@@ -61,7 +44,11 @@ def get_dialect_word(raw_value: Any, dialect: str) -> str:
     try:
         temperature = float(raw_value)
     except (TypeError, ValueError):
-        _LOGGER.debug("Invalid temperature value '%s' for dialect '%s'", raw_value, dialect_key)
+        _LOGGER.debug(
+            "Invalid temperature value '%s' for dialect '%s'",
+            raw_value,
+            dialect_key,
+        )
         return UNKNOWN_STATE
 
     for threshold in _iter_sorted_thresholds(mapping):
@@ -71,62 +58,33 @@ def get_dialect_word(raw_value: Any, dialect: str) -> str:
     return mapping.get(-999, UNKNOWN_STATE)
 
 
-async def async_setup_platform(
+async def async_setup_entry(
     hass: HomeAssistant,
-    config: ConfigType,
-    async_add_entities,
-    discovery_info: DiscoveryInfoType | None = None,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Dialect Thermometer sensors from YAML."""
-    sensors_config = config.get(CONF_SENSORS, {})
-    entities: list[DialectThermometerSensor] = []
-
-    for sensor_id, sensor_conf in sensors_config.items():
-        temperature_entity = sensor_conf[CONF_TEMPERATURE_SENSOR_ID]
-        dialect = sensor_conf[CONF_DIALECT]
-        name = sensor_conf.get(CONF_NAME) or sensor_id.replace("_", " ").title()
-
-        entities.append(
-            DialectThermometerSensor(
-                name=name,
-                source_entity_id=temperature_entity,
-                dialect=dialect,
-                unique_id=f"{DOMAIN}-{sensor_id}"
-            )
-        )
-
-    if not entities:
-        _LOGGER.warning("No Dialect Thermometer sensors defined in configuration")
-        return
-
-    async_add_entities(entities)
+    """Set up a Dialect Thermometer sensor from a config entry."""
+    async_add_entities([DialectThermometerSensor(entry)])
 
 
 class DialectThermometerSensor(SensorEntity):
     """Representation of a Dialect Thermometer sensor."""
 
-    _attr_has_entity_name = False
     _attr_should_poll = False
     _attr_native_unit_of_measurement = None
 
-    def __init__(self, name: str, source_entity_id: str, dialect: str, unique_id: str | None = None) -> None:
-        self._attr_name = name
-        self._source_entity_id = source_entity_id
-        self._dialect = dialect
-        self._attr_unique_id = unique_id
+    def __init__(self, entry: ConfigEntry) -> None:
+        self._config_entry_id = entry.entry_id
+        self._attr_name = entry.title
+        self._source_entity_id = entry.data[CONF_TEMPERATURE_SENSOR_ID]
+        self._dialect = entry.data[CONF_DIALECT]
+        self._attr_unique_id = entry.unique_id or entry.entry_id
         self._attr_native_value = UNKNOWN_STATE
         self._unsubscribe: Callable[[], None] | None = None
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
-
-        def _state_listener(event) -> None:
-            new_state: State | None = event.data.get("new_state")
-            self._process_state(new_state)
-
-        self._unsubscribe = async_track_state_change_event(
-            self.hass, [self._source_entity_id], _state_listener
-        )
+        self._subscribe_to_source()
 
         initial_state = self.hass.states.get(self._source_entity_id)
         self._process_state(initial_state)
@@ -136,6 +94,46 @@ class DialectThermometerSensor(SensorEntity):
         if self._unsubscribe:
             self._unsubscribe()
             self._unsubscribe = None
+
+    async def async_update_config_entry(self, config_entry: ConfigEntry) -> None:
+        """Handle updates to the config entry (e.g. rename)."""
+        if config_entry.entry_id != self._config_entry_id:
+            return
+
+        self._attr_name = config_entry.title
+        new_source = config_entry.data[CONF_TEMPERATURE_SENSOR_ID]
+        new_dialect = config_entry.data[CONF_DIALECT]
+
+        reload_state = False
+
+        if new_source != self._source_entity_id:
+            self._source_entity_id = new_source
+            self._subscribe_to_source()
+            reload_state = True
+
+        if new_dialect != self._dialect:
+            self._dialect = new_dialect
+            reload_state = True
+
+        if reload_state:
+            state = self.hass.states.get(self._source_entity_id)
+            self._process_state(state)
+        else:
+            self.async_write_ha_state()
+
+    def _subscribe_to_source(self) -> None:
+        if self._unsubscribe:
+            self._unsubscribe()
+
+        def _state_listener(event) -> None:
+            new_state: State | None = event.data.get("new_state")
+            self._process_state(new_state)
+
+        self._unsubscribe = async_track_state_change_event(
+            self.hass,
+            [self._source_entity_id],
+            _state_listener,
+        )
 
     def _process_state(self, state: State | None) -> None:
         if state is None:

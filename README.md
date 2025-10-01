@@ -9,21 +9,9 @@ Custom Home Assistant sensor platform that translates a numeric temperature sens
 
 ## Konfigurasjon
 
-Legg følgende eksempel til i `configuration.yaml`:
-
-```yaml
-sensor:
-  - platform: dialect_thermometer
-    sensors:
-      stue_varmt:
-        temperature_sensor_id: sensor.stue_temperatur
-        dialect: hardanger
-        name: "Stue Hardanger Dialekt"
-      ute_kaldt:
-        temperature_sensor_id: sensor.utendors_temperatur
-        dialect: sortland
-        name: "Ute Sortland Dialekt"
-```
+1. Åpne Home Assistant og naviger til **Innstillinger → Enheter og tjenester**.
+2. Velg **Legg til integrasjon**, søk etter «Dialekttermometer» og følg veiviseren.
+3. Angi navn, velg temperatursensor og ønsket dialekt. Gjenta for flere sensorer.
 
 ## Dialekter
 

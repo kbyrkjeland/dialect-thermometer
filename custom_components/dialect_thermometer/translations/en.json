@@ -1,0 +1,19 @@
+{
+  "title": "Dialekttermometer",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Create Dialekttermometer sensor",
+        "description": "Select the temperature source entity and which dialect to speak.",
+        "data": {
+          "name": "Name",
+          "temperature_sensor_id": "Temperature sensor entity",
+          "dialect": "Dialect"
+        }
+      }
+    },
+    "abort": {
+      "no_dialects_defined": "No dialects are defined for this integration."
+    }
+  }
+}

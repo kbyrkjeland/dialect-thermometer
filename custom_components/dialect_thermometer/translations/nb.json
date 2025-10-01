@@ -1,0 +1,19 @@
+{
+  "title": "Dialekttermometer",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lag Dialekttermometer-sensor",
+        "description": "Velg temperatursensoren som skal oversettes og hvilken dialekt som skal brukes.",
+        "data": {
+          "name": "Navn",
+          "temperature_sensor_id": "Temperatursensor",
+          "dialect": "Dialekt"
+        }
+      }
+    },
+    "abort": {
+      "no_dialects_defined": "Ingen dialekter er definert for denne integrasjonen."
+    }
+  }
+}
