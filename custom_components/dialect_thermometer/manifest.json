@@ -1,9 +1,9 @@
 {
   "domain": "dialect_thermometer",
   "name": "Dialekttermometer",
-  "codeowners": ["@dittbrukernavn"],
+  "codeowners": ["@kbyrkjeland"],
   "config_flow": false,
-  "issue_tracker": "https://github.com/brukernavn/dialect-thermometer/issues",
+  "issue_tracker": "https://github.com/kbyrkjeland/dialect-thermometer/issues",
   "requirements": [],
   "version": "1.0.0"
 }
