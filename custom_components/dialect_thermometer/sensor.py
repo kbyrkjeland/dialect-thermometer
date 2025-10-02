@@ -80,6 +80,7 @@ class DialectThermometerSensor(SensorEntity):
         self._dialect = entry.data[CONF_DIALECT]
         self._attr_unique_id = entry.unique_id or entry.entry_id
         self._attr_native_value = UNKNOWN_STATE
+        self._attr_icon = "mdi:chat-outline"
         self._unsubscribe: Callable[[], None] | None = None
 
     async def async_added_to_hass(self) -> None:
