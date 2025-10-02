@@ -6,7 +6,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, selector
 
 from .const import CONF_DIALECT, CONF_TEMPERATURE_SENSOR_ID, DOMAIN
 from .dialects import DIALECTS
@@ -45,14 +45,18 @@ class DialectThermometerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 },
             )
 
+        data_schema = vol.Schema(
+            {
+                vol.Required(CONF_NAME): cv.string,
+                vol.Required(CONF_TEMPERATURE_SENSOR_ID): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain=["sensor"])
+                ),
+                vol.Required(CONF_DIALECT, default=default_dialect): vol.In(dialect_choices),
+            }
+        )
+
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_NAME): str,
-                    vol.Required(CONF_TEMPERATURE_SENSOR_ID): cv.entity_id,
-                    vol.Required(CONF_DIALECT, default=default_dialect): vol.In(dialect_choices),
-                }
-            ),
+            data_schema=self.add_suggested_values_to_schema(data_schema, user_input),
             errors=errors,
         )
