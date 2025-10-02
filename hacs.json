@@ -1,0 +1,5 @@
+{
+  "name": "Dialekttermometer",
+  "render_readme": true,
+  "icon": "custom_components/dialect_thermometer/icon.png"
+}
