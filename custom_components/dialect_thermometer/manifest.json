@@ -6,5 +6,7 @@
   "issue_tracker": "https://github.com/kbyrkjeland/dialect-thermometer/issues",
   "requirements": [],
   "iot_class": "local_push",
+  "icon": "dialect_thermometer/icon.png",
+  "logo": "dialect_thermometer/logo.png",
   "version": "1.0.0"
 }

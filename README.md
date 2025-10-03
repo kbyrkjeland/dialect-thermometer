@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/kbyrkjeland/dialect-thermometer/main/custom_components/dialect_thermometer/icon.png" alt="Dialekttermometer logo" title="Dialekttermometer" align="right" height="60" />
+
 # Dialekttermometer
 
 Custom Home Assistant sensor platform som oversetter en temperatursensor til et lokalt dialektuttrykk.
