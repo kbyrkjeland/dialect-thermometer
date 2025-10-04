@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/kbyrkjeland/dialect-thermometer/main/custom_components/dialect_thermometer/icon.png" alt="Dialekttermometer logo" title="Dialekttermometer" align="right" height="60" />
+<img src="https://raw.githubusercontent.com/kbyrkjeland/dialect-thermometer/main/logo.png" alt="Dialekttermometer logo" title="Dialekttermometer" align="right" height="60" />
 
 # Dialekttermometer
 
