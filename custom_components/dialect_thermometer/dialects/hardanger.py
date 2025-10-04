@@ -3,20 +3,22 @@
 from __future__ import annotations
 
 DIALECT = {
-    40: "Sju varmt ha då",
-    30: "Jeghalt været",
-    25: "Eg liggja vakk",
-    20: "I sniggo vetto",
-    15: "Gødt utestøveir",
-    10: "No kosmar det tå",
-    5: "Astesjn inn",
-    0: "Genokaildt",
-    -5: "Førr fy so kaildt",
-    -10: "Snøkje",
-    -15: "Då vetto ordno kaildet",
-    -20: "Eg tykkjje da so kaildt",
-    -25: "Bein-kaildt",
-    -30: "Opti! Gørrane land!",
-    -40: "Nå kos då",
-    -999: "De kan ikkje vø her",
+    45: "So varmt ha da aldri vò",
+    40: "Naoe meg!",
+    35: "Jyselè varmt",
+    30: "No æ da nok, eg flytte vekk"
+    25: "I morgo vette da bergsel",
+    20: "Godt arbeidsvêr",
+    15: "No kraonar dei tè"
+    10: "Aotekje pao adle bakkar",
+    5: "Graokaldt",
+    0: "Fare fy svedl",
+    -5: "Snekje",
+    -10: "Pao med kåtena!",
+    -15: "Da vette endao kaldare naor austavinden kjeme",
+    -20: "Eg tykkje da æ kaldt",
+    -25: "Beinkaldt, spyru du meg",
+    -30: "Gjè eg va` i eit varmare land",
+    -40: "Nå kan du koma i prysso",
+    -999: "Naoe meg! Da kan ikkje ve her",
 }
